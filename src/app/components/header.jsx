@@ -5,14 +5,15 @@ import { WeatherContextProvider } from "../contexts/context";
 import axios from "axios";
 
 const Header = () => {
-  const { darkMode, setDarkMode, setSearchInput, searchInput } = useContext(
-    WeatherContextProvider
-  );
+  const { darkMode, setDarkMode, setSearchInput, searchInput, setLocation } =
+    useContext(WeatherContextProvider);
   const [option, setOptions] = useState([]);
+  const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+
   useEffect(() => {
     async function autoComplete() {
       const result = await axios.get(
-        `http://api.weatherapi.com/v1/search.json?key=9f64b16c6d9f4762a95114827250803&q=${searchInput}`
+        `http://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${searchInput}`
       );
       setOptions(result.data);
     }
@@ -21,35 +22,42 @@ const Header = () => {
     }
   }, [searchInput]);
   return (
-    <div className="flex w-full items-center justify-between p-2">
+    <div className="flex w-full items-center justify-between p-4 px-12">
       <div
-        className={`border w-16  flex items-center p-1 justify-between  rounded-xl gap-4 relative ${
-          darkMode && "text-white "
+        className={`border w-32 flex items-center  h-11 overflow-hidden justify-between  rounded-3xl gap-4 relative cursor-pointer ${
+          darkMode && "text-white bg-gray-800 "
         }`}
       >
-        <FaSun
-          className={`z-1 w-1/2 teext-white`}
+        <span
+         className={`z-1 w-1/2 flex justify-center text-2xl  text-white`}
           onClick={() => {
             setDarkMode(false);
           }}
-        />
-        <FaMoon
-          className="z-1 w-1/2"
+        >
+          <FaSun />
+        </span>
+        <span
+        className="z-1 w-1/2 flex justify-center text-2xl"
           onClick={() => {
             setDarkMode(true);
           }}
-        />
-        <button
-          className={`h-full w-1/2 left-0 absolute z-0 rounded-full bg-red-500 ${
+        >
+          <FaMoon  />
+        </span>
+        <div
+          className={`h-11 w-1/2 left-0 absolute z-0 rounded-full bg-red-500 ${
             darkMode && " translate-x-full"
           }`}
-        ></button>
+        ></div>
       </div>
-      <span className="border w-3/5 px-2  rounded-lg flex justify-center items-center gap-1 relative">
-        <FaSearch className="" />
+      <span className="border min-w-[500px] w-3/6 px-6 py-2 rounded-4xl flex justify-center items-center gap-1 relative">
+        <FaSearch className="text-xl text-gray-500" />
         <input
           type="text"
-          className="w-full focus:outline-none p-2"
+          className={`w-full focus:outline-none p-2 ${
+            darkMode ? "text-white" : "text-black"
+          }`}
+          placeholder="Search City"
           onInput={(e) => {
             setSearchInput(e.target.value);
             console.log(e.target.value);
@@ -59,10 +67,14 @@ const Header = () => {
           <div className="absolute p-2 w-full h-fit border top-full rounded-lg shadow-lg">
             {option.map((item, index) => {
               return (
-                <p key={index} className="border-b cursor-pointer"
-                onClick={()=>{
-                  setSearchInput(item.name)
-                }}>
+                <p
+                  key={index}
+                  className="border-b cursor-pointer"
+                  onClick={() => {
+                    setLocation(`${item.name},${item.country}`);
+                    setOptions([]);
+                  }}
+                >
                   {item.name},{item.country}{" "}
                 </p>
               );
@@ -70,7 +82,7 @@ const Header = () => {
           </div>
         )}
       </span>
-      <button className="flex items-center bg-[#4CBB17] gap-1 text-white p-2 rounded-lg">
+      <button className="flex items-center bg-[#4CBB17] gap-1 text-white p-3 rounded-4xl">
         <BiTargetLock />
         <span className="hidden lg:block">Current location</span>
       </button>

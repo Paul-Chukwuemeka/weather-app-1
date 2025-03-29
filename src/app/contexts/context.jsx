@@ -7,6 +7,8 @@ const WeatherContext = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [response,setResponse] = useState([])
   const [searchInput,setSearchInput] = useState("")
+  const [location,setLocation] = useState("")
+  const [forecast,setForecast] = useState([])
   return (
     <WeatherContextProvider.Provider
       value={{
@@ -15,7 +17,11 @@ const WeatherContext = ({ children }) => {
         response,
         setResponse,
         searchInput,
-        setSearchInput
+        setSearchInput,
+        location,
+        setLocation,
+        forecast,
+        setForecast
       }}
     >
       {children}
